@@ -56,29 +56,61 @@
 
 //********************** Record types **********************
 
+//#define OMF_RHEADR   0x6E  // R-Module Header Record
+//#define OMF_REGINT   0x70  // Register Initialization Record
+//#define OMF_REDATA   0x72  // Relocatable Enumerated Data Record
+//#define OMF_RIDATA   0x74  // Relocatable Iterated Data Record
+//#define OMF_OVLDEF   0x76  // Overlay Definition Record
+//#define OMF_ENDREC   0x78  // End Record
+//#define OMF_BLKDEF   0x7A  // Block Definition Record
+//#define OMF_BLKD32   0x7B  // 32-bit Block Definition Record
+//#define OMF_BLKEND   0x7C  // Block End Record
+//#define OMF_BLKE32   0x7D  // 32-bit Block End Record
+//#define OMF_DEBSYM   0x7E  // Debug Symbols Record
 #define OMF_THEADR   0x80  // Translator Header Record
 #define OMF_LHEADR   0x82  // Library Module Header Record
+//#define OMF_PEDATA   0x84  // Physical Enumerated Data Record
+//#define OMF_PIDATA   0x86  // Physical Iterated Data Record
 #define OMF_COMENT   0x88  // Comment Record (Including all comment class extensions)
-#define OMF_MODEND   0x8A  // (0x8B) Module End Record
+#define OMF_MODEND   0x8A  // Module End Record
+#define OMF_MODE32   0x8B  // 32-bit Module End Record
 #define OMF_EXTDEF   0x8C  // External Names Definition Record
-#define OMF_PUBDEF   0x90  // (0x91) Public Names Definition Record
-#define OMF_LINNUM   0x94  // (0x95) Line Numbers Record
+#define OMF_TYPDEF   0x8E  // 32-bit External Names Definition Record
+#define OMF_PUBDEF   0x90  // Public Names Definition Record
+#define OMF_PUBD32   0x91  // 32-bit Public Names Definition Record
+#define OMF_LOCSYM   0x92  // Local Symbols Record
+#define OMF_LINNUM   0x94  // Line Numbers Record
+#define OMF_LINN32   0x95  // 32-bit Line Numbers Record
 #define OMF_LNAMES   0x96  // List of Names Record
-#define OMF_SEGDEF   0x98  // (0x99) Segment Definition Record
+#define OMF_SEGDEF   0x98  // Segment Definition Record
+#define OMF_SEGD32   0x99  // 32-bit Segment Definition Record
 #define OMF_GRPDEF   0x9A  // Group Definition Record
-#define OMF_FIXUPP   0x9C  // (0x9D) Fixup Record
-#define OMF_LEDATA   0xA0  // (0xA1) Logical Enumerated Data Record
-#define OMF_LIDATA   0xA2  // (0xA3) Logical Iterated Data Record
+#define OMF_FIXUPP   0x9C  // Fixup Record
+#define OMF_FIXU32   0x9D  // 32-bit Fixup Record
+#define OMF_LEDATA   0xA0  // Logical Enumerated Data Record
+#define OMF_LEDA32   0xA1  // 32-bit Logical Enumerated Data Record
+#define OMF_LIDATA   0xA2  // Logical Iterated Data Record
+#define OMF_LIDA32   0xA3  // 32-bit Logical Iterated Data Record
+//#define OMF_LIBHED   0xA4  // Library Header Record
+//#define OMF_LIBNAM   0xA6  // Library Module Names Record
+//#define OMF_LIBLOC   0xA8  // Library Module Locations Record
+//#define OMF_LIBDIC   0xAA  // Library Dictionary Record
 #define OMF_COMDEF   0xB0  // Communal Names Definition Record
-#define OMF_BAKPAT   0xB2  // (0xB3) Backpatch Record
+#define OMF_BAKPAT   0xB2  // Backpatch Record
+#define OMF_BAKP32   0xB3  // 32-bit Backpatch Record
 #define OMF_LEXTDEF  0xB4  // Local External Names Definition Record
-#define OMF_LPUBDEF  0xB6  // (0xB7) Local Public Names Definition Record
+#define OMF_LEXTD32  0xB5  // 32-bit Local External Names Definition Record
+#define OMF_LPUBDEF  0xB6  // Local Public Names Definition Record
+#define OMF_LPUBD32  0xB7  // 32-bit Local Public Names Definition Record
 #define OMF_LCOMDEF  0xB8  // Local Communal Names Definition Record
 #define OMF_CEXTDEF  0xBC  // COMDAT External Names Definition Record
-#define OMF_COMDAT   0xC2  // (0xC3) Initialized Communal Data Record
-#define OMF_LINSYM   0xC4  // (0xC5) Symbol Line Numbers Record
+#define OMF_COMDAT   0xC2  // Initialized Communal Data Record
+#define OMF_COMD32   0xC3  // 32-bit Initialized Communal Data Record
+#define OMF_LINSYM   0xC4  // Symbol Line Numbers Record
+#define OMF_LINS32   0xC5  // 32-bit Symbol Line Numbers Record
 #define OMF_ALIAS    0xC6  // Alias Definition Record
-#define OMF_NBKPAT   0xC8  // (0xC9) Named Backpatch Record
+#define OMF_NBKPAT   0xC8  // Named Backpatch Record
+#define OMF_NBKP32   0xC9  // 32-bit Named Backpatch Record
 #define OMF_LLNAMES  0xCA  // Local Logical Names Definition Record
 #define OMF_VERNUM   0xCC  // OMF Version Number Record
 #define OMF_VENDEXT  0xCE  // Vendor-specific OMF Extension Record

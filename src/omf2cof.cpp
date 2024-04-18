@@ -95,7 +95,7 @@ void COMF2COF::MakeSymbolTable1() {
 
     // Loop through segments of old file
     for (i = 0; i < NumRecords; i++) {
-        if (Records[i].Type2 == OMF_SEGDEF) {
+        if (Records[i].Type2 == OMF_SEGDEF || Records[i].Type2 == OMF_SEGD32) {
             // SEGDEF record
             Records[i].Index = 3;
             // Loop through entries in record. There should be only 1
@@ -225,9 +225,9 @@ void COMF2COF::MakeSymbolTable1() {
             }
             if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
         }
-        if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMDEF) {
+        if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMD32 || Records[i].Type2 == OMF_COMDEF) {
             // Communal sections
-            err.submit(1055);
+            err.submit(1055, Records[i].Type2);
         }
     }
 }
@@ -271,7 +271,7 @@ void COMF2COF::MakeSymbolTable3() {
 
     // Search for PUBDEF records
     for (i = 0; i < NumRecords; i++) {
-        if (Records[i].Type2 == OMF_PUBDEF) {
+        if (Records[i].Type2 == OMF_PUBDEF || Records[i].Type2 == OMF_PUBD32) {
             // PUBDEF record
 
             Records[i].Index = 3;
@@ -348,7 +348,7 @@ void COMF2COF::MakeSymbolTable5() {
     // Search for FIXUPP records and data records
     for (i = 0; i < NumRecords; i++) {
 
-        if (Records[i].Type2 == OMF_LEDATA) {
+        if (Records[i].Type2 == OMF_LEDATA || Records[i].Type2 == OMF_LEDA32) {
             // LEDATA record. Remember pointer to binary data in order to read inline offset
             Records[i].Index = 3;                   // Initialize record reading
             Records[i].GetIndex();                  // Read segment and offset
@@ -357,7 +357,7 @@ void COMF2COF::MakeSymbolTable5() {
             LastDataRecordPointer = Records[i].buffer + Records[i].FileOffset + Records[i].Index;
         }
 
-        if (Records[i].Type2 == OMF_FIXUPP) {
+        if (Records[i].Type2 == OMF_FIXUPP || Records[i].Type2 == OMF_FIXU32) {
             // FIXUPP record
             Records[i].Index = 3;                   // Initialize record reading
 
@@ -505,7 +505,7 @@ void COMF2COF::MakeSections() {
 
         // Search for LEDATA, LIDATA and FIXUPP records for this segment
         for (RecNum = 0; RecNum < NumRecords; RecNum++) {
-            if (Records[RecNum].Type2 == OMF_LEDATA) {
+            if (Records[RecNum].Type2 == OMF_LEDATA || Records[RecNum].Type2 == OMF_LEDA32) {
 
                 // LEDATA record
                 Records[RecNum].Index = 3;           // Initialize record reading
@@ -551,7 +551,7 @@ void COMF2COF::MakeSections() {
 
             } // Finished with LEDATA record
 
-            if (Records[RecNum].Type2 == OMF_LIDATA) {
+            if (Records[RecNum].Type2 == OMF_LIDATA || Records[RecNum].Type2 == OMF_LIDA32) {
                 // LIDATA record
                 Records[RecNum].Index = 3;           // Initialize record reading
                 Segment = Records[RecNum].GetIndex();
@@ -578,13 +578,13 @@ void COMF2COF::MakeSections() {
 
             } // Finished with LIDATA record
 
-            if (Records[RecNum].Type2 == OMF_COMDAT) {
+            if (Records[RecNum].Type2 == OMF_COMDAT || Records[RecNum].Type2 == OMF_COMD32) {
                 // COMDAT record. Currently not supported by objconv
                 LastDataRecord = RecNum;             // Save for later FIXUPP that refers to this record
                 Segment = 0;                         // Ignore any relocation referring to this
             }
 
-            if (Records[RecNum].Type2 == OMF_FIXUPP) {
+            if (Records[RecNum].Type2 == OMF_FIXUPP || Records[RecNum].Type2 == OMF_FIXU32) {
                 // FIXUPP record
 
                 if (Segment != DesiredSegment) continue; // Does not refer to this segment
@@ -600,16 +600,16 @@ void COMF2COF::MakeSections() {
 
                 Records[RecNum].Index = 3;
 
-                if (Records[LastDataRecord].Type2 != OMF_LEDATA && Records[RecNum].Index < Records[RecNum].End) {
+                if ((Records[LastDataRecord].Type2 != OMF_LEDATA || Records[LastDataRecord].Type2 != OMF_LEDA32) && Records[RecNum].Index < Records[RecNum].End) {
                     // Non-empty FIXUPP record does not refer to LEDATA record
-                    if (Records[LastDataRecord].Type2 == OMF_COMDAT) {
+                    if (Records[LastDataRecord].Type2 == OMF_COMDAT || Records[LastDataRecord].Type2 == OMF_COMD32) {
                         // COMDAT currently not supported. Ignore!
                     }
-                    else if (Records[LastDataRecord].Type2 == OMF_LIDATA) {
-                        err.submit(2311);              // Error: Relocation of iterated data not supported
+                    else if (Records[LastDataRecord].Type2 == OMF_LIDATA || Records[LastDataRecord].Type2 == OMF_LIDA32) {
+                        err.submit(2311, Records[LastDataRecord].Type2);              // Error: Relocation of iterated data not supported
                     }
                     else {
-                        err.submit(2312);              // Does not refer to data record
+                        err.submit(2312, Records[LastDataRecord].Type2);              // Does not refer to data record
                     }
                     continue;                         // Ignore this FIXUPP record
                 }
@@ -734,7 +734,7 @@ void COMF2COF::MakeSections() {
 
                             // Translate old EXTDEF index to new symbol table index
                             if (Target >= ExtdefTranslation.GetNumEntries()) {
-                                Target = 0; err.submit(2312);
+                                Target = 0; err.submit(2312, Records[RecNum].Type2);
                                 continue;
                             }
                             rel.SymbolTableIndex = ExtdefTranslation[Target];
@@ -817,14 +817,17 @@ void COMF2COF::CheckUnsupportedRecords() {
         case OMF_THEADR: case OMF_MODEND: case OMF_EXTDEF: case OMF_PUBDEF:
         case OMF_LNAMES: case OMF_SEGDEF: case OMF_GRPDEF: case OMF_FIXUPP:
         case OMF_LEDATA: case OMF_LIDATA: case OMF_COMDEF: case OMF_VERNUM:
+
+        case OMF_MODE32: case OMF_PUBD32: case OMF_SEGD32: case OMF_FIXU32:
+        case OMF_LEDA32: case OMF_LIDA32:
             // These record types are supported or can safely be ignored
             break;
 
-        case OMF_LINNUM: case OMF_LINSYM:
+        case OMF_LINNUM: case OMF_LINN32: case OMF_LINSYM:
             // Debug records
             cmd.CountDebugRemoved();  break;
 
-        case OMF_COMDAT: case OMF_LCOMDEF: case OMF_CEXTDEF:
+        case OMF_COMDAT: case OMF_COMD32: case OMF_LCOMDEF: case OMF_CEXTDEF:
             NumComdat++;  break;                    // Count COMDAT records
 
         case OMF_COMENT:
