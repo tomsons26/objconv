@@ -15,34 +15,67 @@
 
 // OMF Record type names
 SIntTxt OMFRecordTypeNames[] = {
+   {OMF_RHEADR,      "R-Module Header"},
+   {OMF_REGINT,      "Register Initialization"},
+   {OMF_REDATA,      "Relocatable Enumerated Data"},
+   {OMF_RIDATA,      "Relocatable Iterated Data"},
+   {OMF_OVLDEF,      "Overlay Definition"},
+   {OMF_ENDREC,      "End"},
+   {OMF_BLKDEF,      "Block Definition"},
+   {OMF_BLKD32,      "32-bit Block Definition"},
+   {OMF_BLKEND,      "Block End"},
+   {OMF_BLKE32,      "32-bit Block End"},
+   {OMF_DEBSYM,      "Debug Symbols"},
    {OMF_THEADR,      "Translator Header"},
    {OMF_LHEADR,      "Library Module Header"},
-   {OMF_COMENT,      "Comment"},
+   {OMF_PEDATA,      "Physical Enumerated Data"},
+   {OMF_PIDATA,      "Physical Iterated Data"},
+   {OMF_COMENT,      "Comment (Including all comment class extensions)"},
    {OMF_MODEND,      "Module End"},
+   {OMF_MODE32,      "32-bit Module End"},
    {OMF_EXTDEF,      "External Names Definition"},
+   {OMF_TYPDEF,      "32-bit External Names Definition"},
    {OMF_PUBDEF,      "Public Names Definition"},
+   {OMF_PUBD32,      "32-bit Public Names Definition"},
+   {OMF_LOCSYM,      "Local Symbols"},
    {OMF_LINNUM,      "Line Numbers"},
+   {OMF_LINN32,      "32-bit Line Numbers"},
    {OMF_LNAMES,      "List of Names"},
    {OMF_SEGDEF,      "Segment Definition"},
+   {OMF_SEGD32,      "32-bit Segment Definition"},
    {OMF_GRPDEF,      "Group Definition"},
    {OMF_FIXUPP,      "Fixup"},
-   {OMF_LEDATA,      "Enumerated Data"},
-   {OMF_LIDATA,      "Iterated Data"},
+   {OMF_FIXU32,      "32-bit Fixup"},
+   {OMF_LEDATA,      "Logical Enumerated Data"},
+   {OMF_LEDA32,      "32-bit Logical Enumerated Data"},
+   {OMF_LIDATA,      "Logical Iterated Data"},
+   {OMF_LIDA32,      "32-bit Logical Iterated Data"},
+   {OMF_LIBHED,      "Library Header"},
+   {OMF_LIBNAM,      "Library Module Names"},
+   {OMF_LIBLOC,      "Library Module Locations"},
+   {OMF_LIBDIC,      "Library Dictionary"},
    {OMF_COMDEF,      "Communal Names Definition"},
    {OMF_BAKPAT,      "Backpatch"},
-   {OMF_LEXTDEF,     "Local External Names"},
-   {OMF_LPUBDEF,     "Local Public Names"},
-   {OMF_LCOMDEF,     "Local Communal Names"},
-   {OMF_CEXTDEF,     "COMDAT External Names"},
+   {OMF_BAKP32,      "32-bit Backpatch"},
+   {OMF_LEXTDEF,     "Local External Names Definition"},
+   {OMF_LEXTD32,     "32-bit Local External Names Definition"},
+   {OMF_LPUBDEF,     "Local Public Names Definition"},
+   {OMF_LPUBD32,     "32-bit Local Public Names Definition"},
+   {OMF_LCOMDEF,     "Local Communal Names Definition"},
+   {OMF_CEXTDEF,     "COMDAT External Names Definition"},
    {OMF_COMDAT,      "Initialized Communal Data"},
+   {OMF_COMD32,      "32-bit Initialized Communal Data"},
    {OMF_LINSYM,      "Symbol Line Numbers"},
+   {OMF_LINS32,      "32-bit Symbol Line Numbers"},
    {OMF_ALIAS,       "Alias Definition"},
    {OMF_NBKPAT,      "Named Backpatch"},
-   {OMF_LLNAMES,     "Local Logical Names"},
+   {OMF_NBKP32,      "32-bit Named Backpatch"},
+   {OMF_LLNAMES,     "Local Logical Names Definition"},
    {OMF_VERNUM,      "OMF Version Number"},
    {OMF_VENDEXT,     "Vendor-specific OMF Extension"},
    {OMF_LIBHEAD,     "Library Header"},
-   {OMF_LIBEND,      "Library End"}
+   {OMF_LIBEND,      "Library End"},
+   {OMF_LIBEXT,      "Library extended dictionary"},
 };
 
 // Segment combination names
@@ -139,10 +172,10 @@ void COMF::ParseFile() {
          if (rec.Index != rec.End) err.submit(1203);  // Check for consistency
       }
 
-      if (rec.Type2 == OMF_SEGDEF) {
+      if (rec.Type2 == OMF_SEGDEF || rec.Type2 == OMF_SEGD32) {
          // SEGDEF record. Store segment names by segment index
          OMF_SAttrib Attributes;
-         if (rec.Type2 == OMF_SEGDEF) {
+         if (rec.Type2 == OMF_SEGDEF || rec.Type2 == OMF_SEGD32) {
             Attributes.b = rec.GetByte();     // Read attributes
             if (Attributes.u.A == 0) {
                // Frame and Offset only included if A = 0
@@ -223,7 +256,7 @@ void COMF::DumpRecordTypes() {
       // Print record type
       printf("\n  Record %02X, %s%s, total length %i", Records[i].Type,
          Lookup(OMFRecordTypeNames, Records[i].Type2),
-         (Records[i].Type & 1) ? ".32" : "",
+         (Records[i].Type & 1) ? " 32-bit" : " 16-bit",
          Records[i].End+1);
    }
 }
@@ -313,7 +346,7 @@ void COMF::DumpSymbols() {
          if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
       }
 
-      if (Records[i].Type2 == OMF_PUBDEF) {
+      if (Records[i].Type2 == OMF_PUBDEF || Records[i].Type2 == OMF_PUBD32) {
          // PUBDEF record.
          printf("\n\nPublic names:");
          Records[i].Index = 3;
@@ -362,7 +395,7 @@ void COMF::DumpSegments() {
 
    printf("\n\nSegment records:");
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_SEGDEF) {
+      if (Records[i].Type2 == OMF_SEGDEF || Records[i].Type2 == OMF_SEGD32) {
          // SEGDEF record
          Records[i].Index = 3;
          // Loop through entries in record. There should be only 1
@@ -430,7 +463,7 @@ void COMF::DumpRelocations() {
 
    printf("\n\nLEDATA, LIDATA, COMDAT and FIXUPP records:");
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_LEDATA) {
+      if (Records[i].Type2 == OMF_LEDATA || Records[i].Type2 == OMF_LEDA32) {
          // LEDATA record
          Segment = Records[i].GetIndex();             // Read segment and offset
          Offset  = Records[i].GetNumeric();
@@ -450,7 +483,7 @@ void COMF::DumpRelocations() {
          }
       }
 
-      if (Records[i].Type2 == OMF_LIDATA) {
+      if (Records[i].Type2 == OMF_LIDATA || Records[i].Type2 == OMF_LIDA32) {
          // LIDATA record
          Segment = Records[i].GetIndex();
          Offset  = Records[i].GetNumeric();
@@ -465,7 +498,7 @@ void COMF::DumpRelocations() {
          LastOffset = Offset;
       }
 
-      if (Records[i].Type2 == OMF_COMDAT) {
+      if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMD32) {
          // COMDAT record
          //uint32_t Flags = Records[i].GetByte(); // 1 = continuation, 2 = iterated, 4 = local, 8 = data in code segment
          uint32_t Attributes = Records[i].GetByte();
@@ -486,7 +519,7 @@ void COMF::DumpRelocations() {
          LastOffset = Offset;
       }
 
-      if (Records[i].Type2 == OMF_FIXUPP) {
+      if (Records[i].Type2 == OMF_FIXUPP || Records[i].Type2 == OMF_FIXU32) {
          // FIXUPP record
          printf("\n  FIXUPP:");
          Records[i].Index = 3;
@@ -656,7 +689,7 @@ void COMF::PublicNames(CMemoryBuffer * Strings, CSList<SStringEntry> * Index, in
    // Loop through records and search for PUBDEF records
    do {
       // Read record
-      if (rec.Type2 == OMF_PUBDEF) {
+      if (rec.Type2 == OMF_PUBDEF || rec.Type2 == OMF_PUBD32) {
 
          // Public symbols definition found
          rec.GetIndex(); // Read group
@@ -878,7 +911,7 @@ uint8_t SOMFRecordPointer::GetNext(uint32_t align) {
    FileOffset += End + 1;
 
    // Check if alignment needed
-   if (align > 1 && Type2 == OMF_MODEND) {
+   if (align > 1 && (Type2 == OMF_MODEND || Type2 == OMF_MODE32)) {
       // Align after MODEND record in library
       FileOffset = (FileOffset + align - 1) & - (int32_t)align;
    }
