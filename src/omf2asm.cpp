@@ -64,7 +64,7 @@ void COMF2ASM::CountSegments() {
 
    // Search for SEGDEF records
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_SEGDEF) {
+      if (Records[i].Type2 == OMF_SEGDEF || Records[i].Type2 == OMF_SEGD32) {
          // SEGDEF record
          Records[i].Index = 3;
          // Loop through entries in record. There should be only 1
@@ -172,7 +172,7 @@ void COMF2ASM::CountSegments() {
    // Communal sections (as used by Digital Mars):
    // This part by Don Clugston
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_COMDAT) {
+      if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMD32) {
          Records[i].Index = 3;
 
          uint8_t flags = Records[i].GetByte();
@@ -338,7 +338,7 @@ void COMF2ASM::MakePublicSymbolsTable() {
 
    // Search for PUBDEF records
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_PUBDEF) {
+      if (Records[i].Type2 == OMF_PUBDEF || Records[i].Type2 == OMF_PUBD32) {
          // PUBDEF record
 
          Records[i].Index = 3;
@@ -511,7 +511,7 @@ void COMF2ASM::MakeSegmentList() {
       // Search for LEDATA, LIDATA and FIXUPP records for this segment
       for (RecNum = 0; RecNum < NumRecords; RecNum++) {
 
-         if (Records[RecNum].Type2 == OMF_LEDATA) {
+         if (Records[RecNum].Type2 == OMF_LEDATA || Records[RecNum].Type2 == OMF_LEDA32) {
 
             // LEDATA record
             Records[RecNum].Index = 3;           // Initialize record reading
@@ -556,7 +556,7 @@ void COMF2ASM::MakeSegmentList() {
 
          } // Finished with LEDATA record
 
-         if (Records[RecNum].Type2 == OMF_LIDATA) {
+         if (Records[RecNum].Type2 == OMF_LIDATA || Records[RecNum].Type2 == OMF_LIDA32) {
             // LIDATA record
             Records[RecNum].Index = 3;           // Initialize record reading
             Segment = Records[RecNum].GetIndex();
@@ -583,7 +583,7 @@ void COMF2ASM::MakeSegmentList() {
 
          } // Finished with LIDATA record
 
-         if (Records[RecNum].Type2 == OMF_COMDAT) {
+         if (Records[RecNum].Type2 == OMF_COMDAT || Records[RecNum].Type2 == OMF_COMD32) {
             // COMDAT record.
 
             Records[RecNum].Index = 3;           // Initialize record reading
@@ -615,24 +615,24 @@ void COMF2ASM::MakeSegmentList() {
             memcpy(TempBuf.Buf() + RecOffset, LastDataRecordPointer, RecSize);
          } // Finished with COMDAT record
 
-         if (Records[RecNum].Type2 == OMF_FIXUPP) {
+         if (Records[RecNum].Type2 == OMF_FIXUPP || Records[RecNum].Type2 == OMF_FIXU32) {
             // FIXUPP record
             if (Segment != SegNum) continue; // Does not refer to this segment
             Records[RecNum].Index = 3;
 
-            if (Records[LastDataRecord].Type2 == OMF_LEDATA) {
+            if (Records[LastDataRecord].Type2 == OMF_LEDATA || Records[LastDataRecord].Type2 == OMF_LEDA32) {
                // FIXUPP for last LEDATA record
                // Make relocation records
                MakeRelocations(Segment, RecNum, LastOffset, LastDataRecordSize, (uint8_t*)TempBuf.Buf());
             }
             else if (Records[RecNum].Index < Records[RecNum].End) {
                // Non-empty FIXUPP record does not refer to LEDATA record
-               if (Records[LastDataRecord].Type2 == OMF_COMDAT) {
+               if (Records[LastDataRecord].Type2 == OMF_COMDAT || Records[LastDataRecord].Type2 == OMF_COMD32) {
                   // FIXUPP for last COMDAT record
                   // Make relocation records
                   MakeRelocations(Segment, RecNum, LastOffset, LastDataRecordSize, (uint8_t*)TempBuf.Buf());
                }
-               else if (Records[LastDataRecord].Type2 == OMF_LIDATA) {
+               else if (Records[LastDataRecord].Type2 == OMF_LIDATA || Records[LastDataRecord].Type2 == OMF_LIDA32) {
                   err.submit(2311, Records[LastDataRecord].Type2);              // Error: Relocation of iterated data not supported
                }
                else {
