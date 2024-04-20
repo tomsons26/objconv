@@ -1,1 +1,4 @@
 objconv
+[Rr]elease/
+[Dd]ebug/
+*.vcxproj.user
