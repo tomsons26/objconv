@@ -633,10 +633,10 @@ void COMF2ASM::MakeSegmentList() {
                   MakeRelocations(Segment, RecNum, LastOffset, LastDataRecordSize, (uint8_t*)TempBuf.Buf());
                }
                else if (Records[LastDataRecord].Type2 == OMF_LIDATA || Records[LastDataRecord].Type2 == OMF_LIDA32) {
-                  err.submit(2311, Records[LastDataRecord].Type2);              // Error: Relocation of iterated data not supported
+                  err.submit(2311, Records[LastDataRecord].FileOffset);              // Error: Relocation of iterated data not supported
                }
                else {
-                  err.submit(2312, Records[LastDataRecord].Type2);              // Does not refer to data record
+                  err.submit(2312, Records[LastDataRecord].FileOffset);              // Does not refer to data record
                }
             }
          }

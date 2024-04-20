@@ -34,7 +34,7 @@ SIntTxt OMFRecordTypeNames[] = {
    {OMF_MODEND,      "Module End"},
    {OMF_MODE32,      "32-bit Module End"},
    {OMF_EXTDEF,      "External Names Definition"},
-   {OMF_TYPDEF,      "32-bit External Names Definition"},
+   {OMF_TYPDEF,      "Type Definition Record"},
    {OMF_PUBDEF,      "Public Names Definition"},
    {OMF_PUBD32,      "32-bit Public Names Definition"},
    {OMF_LOCSYM,      "Local Symbols"},
@@ -521,7 +521,7 @@ void COMF::DumpRelocations() {
 
       if (Records[i].Type2 == OMF_FIXUPP || Records[i].Type2 == OMF_FIXU32) {
          // FIXUPP record
-         printf("\n  FIXUPP:");
+         printf("\n  FIXUPP: 0x%08X", Records[i].FileOffset);
          Records[i].Index = 3;
 
          // Loop through entries in record

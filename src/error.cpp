@@ -143,7 +143,7 @@ SErrorText ErrorTexts[] = {
    {2302, 2, "Fixup source extends beyond end of section"},
    {2303, 2, "Too many symbols for OMF file. Index exceeds 32767"},
    {2304, 2, "Word-size index exceeds 65535"},
-   {2305, 2, "%i Communal sections found. Currently not supported by Objconv"},
+   {2305, 1, "%i Communal sections found. Currently not supported by Objconv"},
    {2306, 2, "Segment size is 4 Gbytes"},
    {2307, 2, "Segment address is absolute"},
    {2308, 2, "Unknown alignment %i"},

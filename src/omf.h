@@ -75,7 +75,7 @@
 #define OMF_MODEND   0x8A  // Module End Record
 #define OMF_MODE32   0x8B  // 32-bit Module End Record
 #define OMF_EXTDEF   0x8C  // External Names Definition Record
-#define OMF_TYPDEF   0x8E  // 32-bit External Names Definition Record
+#define OMF_TYPDEF   0x8E  // Type Definition Record
 #define OMF_PUBDEF   0x90  // Public Names Definition Record
 #define OMF_PUBD32   0x91  // 32-bit Public Names Definition Record
 #define OMF_LOCSYM   0x92  // Local Symbols Record

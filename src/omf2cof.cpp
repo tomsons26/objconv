@@ -227,7 +227,7 @@ void COMF2COF::MakeSymbolTable1() {
         }
         if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMD32 || Records[i].Type2 == OMF_COMDEF) {
             // Communal sections
-            err.submit(1055, Records[i].Type2);
+            err.submit(1055, Records[i].FileOffset);
         }
     }
 }
@@ -606,10 +606,10 @@ void COMF2COF::MakeSections() {
                         // COMDAT currently not supported. Ignore!
                     }
                     else if (Records[LastDataRecord].Type2 == OMF_LIDATA || Records[LastDataRecord].Type2 == OMF_LIDA32) {
-                        err.submit(2311, Records[LastDataRecord].Type2);              // Error: Relocation of iterated data not supported
+                        err.submit(2311, Records[LastDataRecord].FileOffset);              // Error: Relocation of iterated data not supported
                     }
                     else {
-                        err.submit(2312, Records[LastDataRecord].Type2);              // Does not refer to data record
+                        err.submit(2312, Records[LastDataRecord].FileOffset);              // Does not refer to data record
                     }
                     continue;                         // Ignore this FIXUPP record
                 }
@@ -734,7 +734,7 @@ void COMF2COF::MakeSections() {
 
                             // Translate old EXTDEF index to new symbol table index
                             if (Target >= ExtdefTranslation.GetNumEntries()) {
-                                Target = 0; err.submit(2312, Records[RecNum].Type2);
+                                Target = 0; err.submit(2312, Records[RecNum].FileOffset);
                                 continue;
                             }
                             rel.SymbolTableIndex = ExtdefTranslation[Target];
@@ -820,6 +820,7 @@ void COMF2COF::CheckUnsupportedRecords() {
 
         case OMF_MODE32: case OMF_PUBD32: case OMF_SEGD32: case OMF_FIXU32:
         case OMF_LEDA32: case OMF_LIDA32:
+        case OMF_LEXTDEF: case OMF_LEXTD32:
             // These record types are supported or can safely be ignored
             break;
 
