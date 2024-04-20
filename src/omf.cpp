@@ -253,7 +253,7 @@ void COMF::DumpRecordTypes() {
    printf("\nSummary of records:");
    for (uint32_t i = 0; i < NumRecords; i++) {
       // Print record type
-      printf("\n  Record %02X, %s, total length %i", Records[i].Type,
+      printf("\n  Record %02X:%08X, %s, total length %i", Records[i].Type, Records[i].FileOffset,
          Lookup(OMFRecordTypeNames, Records[i].Type),
          Records[i].End+1);
    }
