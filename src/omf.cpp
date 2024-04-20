@@ -196,7 +196,7 @@ void COMF::ParseFile() {
          }
       }
 
-      if (rec.Type2 == OMF_EXTDEF) {
+      if (rec.Type2 == OMF_EXTDEF || rec.Type2 == OMF_LEXTDEF) {
          // EXTDEF record. Store external symbol names
          // Loop through strings in record
          while (rec.Index < rec.End) {
@@ -330,7 +330,7 @@ void COMF::DumpSymbols() {
    uint32_t Offset;
 
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_EXTDEF) {
+      if (Records[i].Type2 == OMF_EXTDEF || Records[i].Type2 == OMF_LEXTDEF) {
          // EXTDEF record.
          Records[i].Index = 3;
          printf("\n\nExternal names:");
@@ -519,7 +519,7 @@ void COMF::DumpRelocations() {
 
       if (Records[i].Type2 == OMF_FIXUPP) {
          // FIXUPP record
-         printf("\n  FIXUPP:");
+         printf("\n  FIXUPP: %08X", Records[i].FileOffset);
          Records[i].Index = 3;
 
          // Loop through entries in record
