@@ -227,7 +227,7 @@ void COMF2COF::MakeSymbolTable1() {
         }
         if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMDEF) {
             // Communal sections
-            err.submit(1055);
+            err.submit(1055, Records[i].FileOffset);
         }
     }
 }
@@ -606,10 +606,10 @@ void COMF2COF::MakeSections() {
                         // COMDAT currently not supported. Ignore!
                     }
                     else if (Records[LastDataRecord].Type2 == OMF_LIDATA) {
-                        err.submit(2311);              // Error: Relocation of iterated data not supported
+                        err.submit(2311, Records[LastDataRecord].FileOffset);              // Error: Relocation of iterated data not supported
                     }
                     else {
-                        err.submit(2312);              // Does not refer to data record
+                        err.submit(2312, Records[LastDataRecord].FileOffset);              // Does not refer to data record
                     }
                     continue;                         // Ignore this FIXUPP record
                 }
@@ -734,7 +734,7 @@ void COMF2COF::MakeSections() {
 
                             // Translate old EXTDEF index to new symbol table index
                             if (Target >= ExtdefTranslation.GetNumEntries()) {
-                                Target = 0; err.submit(2312);
+                                Target = 0; err.submit(2312, Records[RecNum].FileOffset);
                                 continue;
                             }
                             rel.SymbolTableIndex = ExtdefTranslation[Target];
