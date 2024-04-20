@@ -225,7 +225,7 @@ void COMF2COF::MakeSymbolTable1() {
             }
             if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
         }
-        if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMDEF) {
+        if (Records[i].Type2 == OMF_COMDAT || Records[i].Type2 == OMF_COMDEF || Records[i].Type2 == OMF_LCOMDEF) {
             // Communal sections
             err.submit(1055, Records[i].FileOffset);
         }

@@ -283,7 +283,8 @@ void COMF::DumpNames() {
          }
          if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
       }
-      if (Records[i].Type2 == OMF_COMDEF) {
+#if 0
+      if (Records[i].Type2 == OMF_COMDEF || Records[i].Type2 == OMF_LCOMDEF) {
          // COMDEF record. Communal names
          uint32_t DType, DSize, DNum;
          printf("\n\n Communal names:");
@@ -315,6 +316,7 @@ void COMF::DumpNames() {
          }
          if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
       }
+#endif
    }
 }
 
@@ -374,6 +376,40 @@ void COMF::DumpSymbols() {
             printf("\n  %2i  %s, Type %i", ++xn, GetLocalName(LIndex), Type);
          }
          if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
+      }
+
+      if (Records[i].Type2 == OMF_COMDEF || Records[i].Type2 == OMF_LCOMDEF) {
+         // COMDEF record. Communal names
+          uint32_t DType, DSize, DNum;
+          printf("\n\n Communal names:");
+
+          // Loop through strings in record
+          while (Records[i].Index < Records[i].End) {
+              string = Records[i].GetString();
+              TypeIndex = Records[i].GetByte();
+              printf("\n  %2i  %s, Type %i", ++xn, string, TypeIndex);
+              DType = Records[i].GetByte(); // Data type
+              switch (DType) {
+                  case 0x61:
+                      DNum = Records[i].GetLength();
+                      DSize = Records[i].GetLength();
+                      printf(" FAR: %i*%i bytes", DNum, DSize);
+                      break;
+                  case 0x62:
+                      DSize = Records[i].GetLength();
+                      printf(" NEAR: 0x%X bytes", DSize);
+                      break;
+                  default:
+                      DSize = Records[i].GetLength();
+                      if (DType < 0x60) { // Borland segment index
+                          printf(" segment %i, size 0x%X", DType, DSize);
+                          break;
+                      }
+                      printf(" unknown type %i, size 0x%X", DType, DSize);
+                      break;
+              }
+          }
+          if (Records[i].Index != Records[i].End) err.submit(1203);   // Check for consistency
       }
    }
 }

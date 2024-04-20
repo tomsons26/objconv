@@ -248,7 +248,7 @@ void COMF2ASM::CountSegments() {
 
    // Communal sections (as used by Borland):
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_COMDEF) {
+      if (Records[i].Type2 == OMF_COMDEF || Records[i].Type2 == OMF_LCOMDEF) {
          uint32_t DType, DSize = 0, DNum;
          uint16_t Segment = 0;
          const char * FuncName = 0;
@@ -364,7 +364,7 @@ void COMF2ASM::MakePublicSymbolsTable() {
 
    // Search for OMF_COMDEF records
    for (i = 0; i < NumRecords; i++) {
-      if (Records[i].Type2 == OMF_COMDEF) {
+      if (Records[i].Type2 == OMF_COMDEF || Records[i].Type2 == OMF_LCOMDEF) {
          // COMDEF record, Borland communal name
          uint32_t DType;
          //uint32_t DSize;
@@ -395,8 +395,8 @@ void COMF2ASM::MakePublicSymbolsTable() {
             Segment = CommunalSection;
             isymo = Disasm.AddSymbol(Segment, 0, 0, 0, 0x10, 0, string);
 
-            // Update table for translating old PUBDEF number to disassembler symbol index
-            PubdefTranslation.Push(isymo);
+            // Update table for translating old EXTDEF number to disassembler symbol index
+            ExtdefTranslation.Push(isymo);
          }
          CommunalSection++;
 
