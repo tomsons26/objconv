@@ -813,7 +813,7 @@ void COMF2COF::CheckUnsupportedRecords() {
     // Loop through all records
     for (RecNum = 0; RecNum < NumRecords; RecNum++) {
         // Check record type
-        switch (Records[RecNum].Type2) {
+        switch (Records[RecNum].Type) {
         case OMF_THEADR: case OMF_MODEND: case OMF_EXTDEF: case OMF_PUBDEF:
         case OMF_LNAMES: case OMF_SEGDEF: case OMF_GRPDEF: case OMF_FIXUPP:
         case OMF_LEDATA: case OMF_LIDATA: case OMF_COMDEF: case OMF_VERNUM:
@@ -831,7 +831,7 @@ void COMF2COF::CheckUnsupportedRecords() {
             NumComent++;  break;                    // Count COMENT records
 
         default:                                   // Warning for unknown record type
-            err.submit(1212, COMF::GetRecordTypeName(Records[RecNum].Type2));
+            err.submit(1212, COMF::GetRecordTypeName(Records[RecNum].Type));
         }
     }
     // Report number of unsupported sections found

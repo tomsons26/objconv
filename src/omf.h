@@ -56,12 +56,26 @@
 
 //********************** Record types **********************
 
+#define OMF_RHEADR   0x6E  // R-Module Header Record
+#define OMF_REGINT   0x70  // Register Initialization Record
+#define OMF_REDATA   0x72  // Relocatable Enumerated Data Record
+#define OMF_RIDATA   0x74  // Relocatable Iterated Data Record
+#define OMF_OVLDEF   0x76  // Overlay Definition Record
+#define OMF_ENDREC   0x78  // End Record
+#define OMF_BLKDEF   0x7A  // (0x7B) Block Definition Record
+#define OMF_BLKEND   0x7C  // (0x7D) Block End Record
+#define OMF_DEBSYM   0x7E  // Debug Symbols Record
+
 #define OMF_THEADR   0x80  // Translator Header Record
 #define OMF_LHEADR   0x82  // Library Module Header Record
+#define OMF_PEDATA   0x84  // Physical Enumerated Data Record
+#define OMF_PIDATA   0x86  // Physical Iterated Data Record
 #define OMF_COMENT   0x88  // Comment Record (Including all comment class extensions)
 #define OMF_MODEND   0x8A  // (0x8B) Module End Record
 #define OMF_EXTDEF   0x8C  // External Names Definition Record
+#define OMF_TYPDEF   0x8E  // Type Definition Record
 #define OMF_PUBDEF   0x90  // (0x91) Public Names Definition Record
+#define OMF_LOCSYM   0x92  // Local Symbols Record
 #define OMF_LINNUM   0x94  // (0x95) Line Numbers Record
 #define OMF_LNAMES   0x96  // List of Names Record
 #define OMF_SEGDEF   0x98  // (0x99) Segment Definition Record
@@ -69,9 +83,13 @@
 #define OMF_FIXUPP   0x9C  // (0x9D) Fixup Record
 #define OMF_LEDATA   0xA0  // (0xA1) Logical Enumerated Data Record
 #define OMF_LIDATA   0xA2  // (0xA3) Logical Iterated Data Record
+#define OMF_LIBHED   0xA4  // Library Header Record
+#define OMF_LIBNAM   0xA6  // Library Module Names Record
+#define OMF_LIBLOC   0xA8  // Library Module Locations Record
+#define OMF_LIBDIC   0xAA  // Library Dictionary Record
 #define OMF_COMDEF   0xB0  // Communal Names Definition Record
 #define OMF_BAKPAT   0xB2  // (0xB3) Backpatch Record
-#define OMF_LEXTDEF  0xB4  // Local External Names Definition Record
+#define OMF_LEXTDEF  0xB4  // (0xB5) Local External Names Definition Record
 #define OMF_LPUBDEF  0xB6  // (0xB7) Local Public Names Definition Record
 #define OMF_LCOMDEF  0xB8  // Local Communal Names Definition Record
 #define OMF_CEXTDEF  0xBC  // COMDAT External Names Definition Record
