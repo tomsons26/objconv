@@ -458,6 +458,7 @@ void COMF2COF::MakeSymbolTable5() {
     }
 }
 
+char dbg[2048];
 
 void COMF2COF::MakeSections() {
     // Make sections and relocation tables
@@ -638,6 +639,9 @@ void COMF2COF::MakeSections() {
                             if (FixData.s.Frame < 4) {
                                 Records[RecNum].GetIndex();
                             }
+                        } else {
+                            err.submit(2313);           // Error message: not supported
+                            continue;
                         }
 
                         if (FixData.s.T == 0) {
@@ -664,7 +668,7 @@ void COMF2COF::MakeSections() {
 
                             switch (Locat.s.Location) { // Relocation method
 
-                            case 9: case 13: // 32 bit
+                            case OMF_Fixup_32bit: case OMF_Fixup_32bitLoader: // 32 bit
                                 // The OMF format may indicate a relocation target by an
                                 // offset stored inline in the relocation source.
                                 // We prefer to store the target address explicitly in a
@@ -684,17 +688,21 @@ void COMF2COF::MakeSections() {
                                 *(uint32_t*)(TempBuf.Buf() + LastOffset + Locat.s.Offset) = 0;
                                 break;
 
-                            case 0: case 4:  // 8 bit. Not supported
-                                err.submit(2316, "8 bit");  break;
+                            case OMF_Fixup_8bit: case OMF_Fixup_Hi8bit:  // 8 bit. Not supported
+                                sprintf(dbg, "\n  Unsupported 8 bit, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
+                                err.submit(2316, dbg); break;
 
-                            case 1: case 2: case 5: // 16 bit. Not supported
-                                err.submit(2316, "16 bit");  break;
+                            case OMF_Fixup_16bit: case OMF_Fixup_Segment: case OMF_Fixup_16bitLoader: // 16 bit. Not supported
+                                sprintf(dbg, "  \n  Unsupported 16 bit, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
+                                err.submit(2316, dbg); break;
 
-                            case 3: // 16+16 bit. Not supported
-                                err.submit(2316, "16+16 bit far");  break;
+                            case OMF_Fixup_Far: // 16+16 bit. Not supported
+                                sprintf(dbg, "\n  Unsupported 16+16 bit far, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
+                                err.submit(2316, dbg); break;
 
-                            case 6: case 11: // 16+32 bit. Not supported
-                                err.submit(2316, "16+32 bit far");  break;
+                            case OMF_Fixup_Pharlab48: case OMF_Fixup_Farword: // 16+32 bit. Not supported
+                                sprintf(dbg, "\n  Unsupported 16+32 bit far, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
+                                err.submit(2316, dbg); break;
                             }
                         }
 
