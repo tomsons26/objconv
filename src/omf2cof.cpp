@@ -700,9 +700,20 @@ void COMF2COF::MakeSections() {
                                 sprintf(dbg, "\n  Unsupported 16+16 bit far, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
                                 err.submit(2316, dbg); break;
 
-                            case OMF_Fixup_Pharlab48: case OMF_Fixup_Farword: // 16+32 bit. Not supported
-                                sprintf(dbg, "\n  Unsupported 16+32 bit far, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
-                                err.submit(2316, dbg); break;
+                            case OMF_Fixup_Pharlab48: case OMF_Fixup_Farword: // 16+32 bit.
+
+                                int ugh = *(uint16_t *)inlinep;
+                                TargetDisplacement += *(uint16_t *)((char *)inlinep + 2);
+
+                                if (*(uint32_t *)(TempBuf.Buf() + LastOffset + Locat.s.Offset) != *(uint32_t *)inlinep) {
+                                    // Check that the data in Buf() and TempBuf.Buf() are the same
+                                    err.submit(9000);
+                                }
+                                // Remove the inline addend to avoid adding it twice
+                                *(uint32_t *)(TempBuf.Buf() + LastOffset + Locat.s.Offset) = 0;
+                                break;
+                                //sprintf(dbg, "\n  Unsupported 16+32 bit far, Location %d, Offset %08X", Locat.s.Location, Records[RecNum].FileOffset);
+                                //err.submit(2316, dbg); break;
                             }
                         }
 
